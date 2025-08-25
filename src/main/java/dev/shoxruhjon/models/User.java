@@ -1,6 +1,6 @@
 package dev.shoxruhjon.models;
 
-import dev.shoxruhjon.util.IdGenerator;
+import dev.shoxruhjon.utils.IdGenerator;
 
 public class User {
     private final String id;
@@ -37,7 +37,7 @@ public class User {
         return this.walletBalance;
     }
 
-    public void addWalletBalance(double amount) {
+    public void addToWallet(double amount) {
         this.walletBalance += amount;
     }
 

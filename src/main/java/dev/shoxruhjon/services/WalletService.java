@@ -1,0 +1,47 @@
+package dev.shoxruhjon.services;
+
+import dev.shoxruhjon.models.User;
+import dev.shoxruhjon.models.WalletTransaction;
+
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class WalletService {
+    private final List<WalletTransaction> transactions;
+
+    public WalletService(List<WalletTransaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    public void topUp(User user, double amount) {
+        if (amount <= 0) {
+            System.out.println("❌ Summani to‘g‘ri kiriting.");
+            return;
+        }
+        user.addToWallet(amount);
+        transactions.add(new WalletTransaction(user.getId(), amount, "TOP_UP"));
+        System.out.println("✅ Balans to‘ldirildi.");
+    }
+
+    public void printWallet(User user) {
+        System.out.printf("💰 Balans: %,d so'm%n", Math.round(user.getWalletBalance()));
+    }
+
+    public void printHistory(String userId){
+        System.out.println("\n=== WALLET TARIXI ===");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        List<WalletTransaction> my = transactions.stream()
+                .filter(t -> t.getUserId().equals(userId))
+                .collect(Collectors.toList());
+
+        if (my.isEmpty()) {
+            System.out.println("Tarix bo‘sh.");
+            return;
+        }
+        for (WalletTransaction t : my) {
+            System.out.printf("%s | %s | %,d so'm%n",
+            t.getTimestamp().format(dtf), t.getType(), Math.round(t.getAmount()));
+        }
+    }
+}
