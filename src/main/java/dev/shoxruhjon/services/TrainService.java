@@ -29,7 +29,7 @@ public class TrainService {
         return trains;
     }
 
-    public Optional<Train> findById(long id) {
+    public Optional<Train> findById(String id) {
         return trains.stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst();

@@ -54,7 +54,7 @@ public class TicketService {
             return new CancelResult(false, "Bekor qilib bo'lmaydi: jo'nashga 1 soatdan kam vaqt qoldi.");
         }
         ticket.cancel();
-        user.addWalletBalance(ticket.getPrice());
+        user.addToWallet(ticket.getPrice());
         transactions.add(new WalletTransaction(user.getId(), ticket.getPrice(), "TICKET_REFUND"));
         train.increaseSeat();
         return new CancelResult(true, "Chipta bekor qilindi va pul walletga qaytarildi.");
