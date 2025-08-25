@@ -3,10 +3,10 @@ package dev.shoxruhjon.models;
 import dev.shoxruhjon.util.IdGenerator;
 
 public class User {
-    private String id;
-    private String username;
-    private String passwordHash;
-    private String fullName;
+    private final String id;
+    private final String username;
+    private final String passwordHash;
+    private final String fullName;
     private double walletBalance;
 
     public User(String username, String passwordHash, String fullName) {
