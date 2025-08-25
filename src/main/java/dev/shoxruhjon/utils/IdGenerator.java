@@ -1,4 +1,4 @@
-package dev.shoxruhjon.util;
+package dev.shoxruhjon.utils;
 
 import java.util.UUID;
 

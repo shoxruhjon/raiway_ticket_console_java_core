@@ -1,8 +1,7 @@
 package dev.shoxruhjon.models;
 
-import dev.shoxruhjon.util.IdGenerator;
+import dev.shoxruhjon.utils.IdGenerator;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class WalletTransaction {
