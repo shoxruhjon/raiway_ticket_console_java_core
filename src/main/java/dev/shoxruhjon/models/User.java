@@ -1,24 +1,17 @@
 package dev.shoxruhjon.models;
 
-import dev.shoxruhjon.utils.IdGenerator;
-
-public class User {
-    private final String id;
+public class User extends BaseEntity {
     private final String username;
     private final String passwordHash;
     private final String fullName;
     private double walletBalance;
 
     public User(String fullName, String username, String passwordHash) {
-        this.id = IdGenerator.generateId();
+        super();
         this.username = username;
         this.passwordHash = passwordHash;
         this.fullName = fullName;
         this.walletBalance = 0.0;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getUsername() {
@@ -39,9 +32,11 @@ public class User {
 
     public void addToWallet(double amount) {
         walletBalance += amount;
+        touch();
     }
 
     public void deductWalletBalance(double amount) {
         walletBalance -= amount;
+        touch();
     }
 }

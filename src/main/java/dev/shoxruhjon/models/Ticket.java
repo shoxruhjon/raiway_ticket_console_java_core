@@ -1,11 +1,8 @@
 package dev.shoxruhjon.models;
 
-import dev.shoxruhjon.utils.IdGenerator;
-
 import java.time.LocalDateTime;
 
-public class Ticket {
-    private final String id;
+public class Ticket extends BaseEntity {
     private final String trainId;
     private final String userId;
     private final LocalDateTime purchaseTime;
@@ -13,16 +10,12 @@ public class Ticket {
     private boolean cancelled;
 
     public Ticket(String trainId, String userId, double price) {
-        this.id = IdGenerator.generateId();
+        super(); // BaseEntity constructor
         this.trainId = trainId;
         this.userId = userId;
         this.price = price;
         this.purchaseTime = LocalDateTime.now();
         this.cancelled = false;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getTrainId() {
@@ -46,6 +39,7 @@ public class Ticket {
     }
 
     public void cancel() {
-        cancelled = true;
+        this.cancelled = true;
+        touch(); // updatedAt ni yangilash
     }
 }
