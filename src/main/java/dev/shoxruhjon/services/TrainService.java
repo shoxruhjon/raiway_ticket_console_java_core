@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-public class TrainService {
+public class TrainService implements ITrainService {
 
     private final List<Train> trains;
 
@@ -17,6 +17,7 @@ public class TrainService {
         this.trains = trains;
     }
 
+    @Override
     public void seedTestTrains() {
         trains.add(new Train("Toshkent", "Samarqand", 100_000, 15, LocalDateTime.now().plusMinutes(30)));
         trains.add(new Train("Toshkent", "Buxoro", 120_000, 8, LocalDateTime.now().plusHours(2)));
@@ -25,16 +26,19 @@ public class TrainService {
         trains.add(new Train("Buxoro", "Toshkent", 120_000, 10, LocalDateTime.now().plusHours(8)));
     }
 
+    @Override
     public List<Train> getTrains() {
         return trains;
     }
 
+    @Override
     public Optional<Train> findById(String id) {
         return trains.stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst();
     }
 
+    @Override
     public void printUpcomingTop5() {
         System.out.println("\n=== POYEZD BILET TIZIMI ===\n");
         System.out.println("🕒 Yaqinlashib kelayotgan 5 ta reys:");
@@ -59,33 +63,12 @@ public class TrainService {
                     : t.getDepartureTime().format(dtf);
 
             System.out.printf("%d. %s -> %s - %s - %,d so'm - %d ta joy%n",
-                    i + 1, t.getFrom(), t.getTo(), datePart, Math.round(t.getPrice()), t.getAvailableSeats());
+                    i + 1, t.getFrom(), t.getTo(), datePart,
+                    Math.round(t.getPrice()), t.getAvailableSeats());
         }
     }
 
-
-//    public void printAll() {
-//        System.out.println("\n=== BARCHA REYSLAR ===");
-//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm (dd-MM-yyyy)");
-//
-//        List<Train> sorted = trains.stream()
-//                .sorted(Comparator.comparing(Train::getDepartureTime))
-//                .toList();
-//
-//        if (sorted.isEmpty()) {
-//            System.out.println("❌ Hozircha reyslar mavjud emas.");
-//            return;
-//        }
-//
-//        for (int i = 0; i < sorted.size(); i++) {
-//            Train t = sorted.get(i);
-//            System.out.printf("%d. %s -> %s - %s - %,d so'm - %d ta joy%n",
-//                    i + 1, t.getFrom(), t.getTo(),
-//                    t.getDepartureTime().format(dtf),
-//                    Math.round(t.getPrice()), t.getAvailableSeats());
-//        }
-//    }
-
+    @Override
     public List<Train> printAll() {
         System.out.println("\n=== BARCHA REYSLAR ===");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm (dd-MM-yyyy)");
@@ -96,7 +79,7 @@ public class TrainService {
 
         if (sorted.isEmpty()) {
             System.out.println("❌ Hozircha reyslar mavjud emas.");
-            return List.of(); // bo‘sh ro‘yxat qaytaradi
+            return List.of();
         }
 
         for (int i = 0; i < sorted.size(); i++) {
@@ -106,8 +89,6 @@ public class TrainService {
                     t.getDepartureTime().format(dtf),
                     Math.round(t.getPrice()), t.getAvailableSeats());
         }
-        return sorted; // tartiblangan ro‘yxatni qaytaramiz
+        return sorted;
     }
-
-
 }

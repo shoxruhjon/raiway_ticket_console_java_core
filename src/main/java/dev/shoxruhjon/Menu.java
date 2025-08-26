@@ -3,10 +3,7 @@ package dev.shoxruhjon;
 import dev.shoxruhjon.models.Ticket;
 import dev.shoxruhjon.models.Train;
 import dev.shoxruhjon.models.User;
-import dev.shoxruhjon.services.AuthService;
-import dev.shoxruhjon.services.TicketService;
-import dev.shoxruhjon.services.TrainService;
-import dev.shoxruhjon.services.WalletService;
+import dev.shoxruhjon.services.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -18,17 +15,24 @@ public class Menu {
     private final Database db = new Database();
 
     // Xizmatlar:
-    private final AuthService authService = new AuthService(db.users);
-    private final TrainService trainService = new TrainService(db.trains);
-    private final TicketService ticketService = new TicketService(db.tickets, db.transactions);
-    private final WalletService walletService = new WalletService(db.transactions);
+    private final IAuthService authService;
+    private final ITrainService trainService;
+    private final ITicketService ticketService;
+    private final IWalletService walletService;
+
+    public Menu() {
+        this.authService = new AuthService(db.users);
+        this.trainService = new TrainService(db.trains);
+        this.ticketService = new TicketService(db.tickets, db.transactions);
+        this.walletService = new WalletService(db.transactions);
+
+        trainService.seedTestTrains();
+    }
+
 
     private boolean firstLaunch = true;
     private boolean showAfterLogin = false;
 
-    public Menu() {
-        trainService.seedTestTrains();
-    }
 
     public void start() {
         while (true) {
