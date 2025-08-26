@@ -7,13 +7,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WalletService {
+public class WalletService implements IWalletService {
     private final List<WalletTransaction> transactions;
 
     public WalletService(List<WalletTransaction> transactions) {
         this.transactions = transactions;
     }
 
+    @Override
     public void topUp(User user, double amount) {
         if (amount <= 0) {
             System.out.println("❌ Summani to‘g‘ri kiriting.");
@@ -24,12 +25,14 @@ public class WalletService {
         System.out.println("✅ Balans to‘ldirildi.");
     }
 
+    @Override
     public void printWallet(User user) {
         System.out.printf("💰 Balans: %,d so'm%n", Math.round(user.getWalletBalance()));
     }
 
+    @Override
     public void printHistory(String userId){
-        System.out.println("\n=== WALLET TARIXI ===");
+        System.out.println("\n=== TO'LOVLAR TARIXI ===");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         List<WalletTransaction> my = transactions.stream()
                 .filter(t -> t.getUserId().equals(userId))
@@ -41,7 +44,7 @@ public class WalletService {
         }
         for (WalletTransaction t : my) {
             System.out.printf("%s | %s | %,d so'm%n",
-            t.getTimestamp().format(dtf), t.getType(), Math.round(t.getAmount()));
+                    t.getTimestamp().format(dtf), t.getType(), Math.round(t.getAmount()));
         }
     }
 }

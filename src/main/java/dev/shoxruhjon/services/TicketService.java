@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class TicketService {
+public class TicketService implements ITicketService {
 
     private final List<Ticket> tickets;
     private final List<WalletTransaction> transactions;
@@ -20,6 +20,7 @@ public class TicketService {
         this.transactions = transactions;
     }
 
+    @Override
     public boolean bookTicket(User user, Train train) {
         if(train.getAvailableSeats() <= 0) return false;
         if(user.getWalletBalance() < train.getPrice()) return false;
@@ -32,12 +33,14 @@ public class TicketService {
         return true;
     }
 
+    @Override
     public List<Ticket> getUserActiveTickets(String userId) {
         return tickets.stream()
                 .filter(t -> t.getUserId().equals(userId) && !t.isCancelled())
                 .collect(Collectors.toList());
     }
 
+    @Override
     public Optional<Ticket> findById(String id) {
         return tickets.stream()
                 .filter(t -> t.getId().equals(id))
@@ -45,6 +48,7 @@ public class TicketService {
     }
 
     /** Bekor qilish: jo'nashga 1 soatdan ko‘p vaqt qolganda ruxsat beriladi */
+    @Override
     public CancelResult cancelTicket(User user, Train train, Ticket ticket) {
         if (ticket.isCancelled()) {
             return new CancelResult(false, "Bu chipta allaqachon bekor qilingan.");
@@ -59,15 +63,4 @@ public class TicketService {
         train.increaseSeat();
         return new CancelResult(true, "Chipta bekor qilindi va pul walletga qaytarildi.");
     }
-
-    public static class CancelResult {
-        public final boolean ok;
-        public final String message;
-
-        public CancelResult(boolean ok, String message) {
-            this.ok = ok;
-            this.message = message;
-        }
-    }
-
 }

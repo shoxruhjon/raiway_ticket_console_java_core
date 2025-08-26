@@ -1,11 +1,8 @@
 package dev.shoxruhjon.models;
 
-import dev.shoxruhjon.utils.IdGenerator;
-
 import java.time.LocalDateTime;
 
-public class Train {
-    private final String id;
+public class Train extends BaseEntity {
     private final String from;
     private final String to;
     private final double price;
@@ -13,16 +10,12 @@ public class Train {
     private final LocalDateTime departureTime;
 
     public Train(String from, String to, double price, int availableSeats, LocalDateTime departureTime) {
-        this.id = IdGenerator.generateId();
+        super();
         this.from = from;
         this.to = to;
         this.price = price;
         this.availableSeats = availableSeats;
         this.departureTime = departureTime;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public String getFrom() {
@@ -48,11 +41,12 @@ public class Train {
     public void decreaseSeat() {
         if (availableSeats > 0) {
             availableSeats--;
+            touch();
         }
     }
 
     public void increaseSeat() {
         availableSeats++;
+        touch();
     }
-
 }

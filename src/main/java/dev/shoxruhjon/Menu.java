@@ -3,10 +3,7 @@ package dev.shoxruhjon;
 import dev.shoxruhjon.models.Ticket;
 import dev.shoxruhjon.models.Train;
 import dev.shoxruhjon.models.User;
-import dev.shoxruhjon.services.AuthService;
-import dev.shoxruhjon.services.TicketService;
-import dev.shoxruhjon.services.TrainService;
-import dev.shoxruhjon.services.WalletService;
+import dev.shoxruhjon.services.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -18,19 +15,33 @@ public class Menu {
     private final Database db = new Database();
 
     // Xizmatlar:
-    private final AuthService authService = new AuthService(db.users);
-    private final TrainService trainService = new TrainService(db.trains);
-    private final TicketService ticketService = new TicketService(db.tickets, db.transactions);
-    private final WalletService walletService = new WalletService(db.transactions);
+    private final IAuthService authService;
+    private final ITrainService trainService;
+    private final ITicketService ticketService;
+    private final IWalletService walletService;
 
     public Menu() {
+        this.authService = new AuthService(db.users);
+        this.trainService = new TrainService(db.trains);
+        this.ticketService = new TicketService(db.tickets, db.transactions);
+        this.walletService = new WalletService(db.transactions);
+
         trainService.seedTestTrains();
     }
+
+
+    private boolean firstLaunch = true;
+    private boolean showAfterLogin = false;
+
 
     public void start() {
         while (true) {
             // Har ekranda — yaqin 5 ta reys
-            trainService.printUpcomingTop5();
+            if (firstLaunch || showAfterLogin) {
+                trainService.printUpcomingTop5();
+                firstLaunch = false;       // faqat 1-marta ishlaydi
+                showAfterLogin = false;    // login bo‘lganda 1 marta ishlaydi
+            }
 
             if (authService.getCurrentUser() == null) {
                 // Login qilmagan foydalanuvchi menyusi
@@ -55,27 +66,27 @@ public class Menu {
             } else {
                 // Login qilingan foydalanuvchi menyusi
                 System.out.println("\n=== MENYU ===");
-                System.out.println("3. Barcha reyslarni ko'rish");
-                System.out.println("4. Bilet band qilish");
-                System.out.println("5. Mening biletlarim");
-                System.out.println("6. Biletni bekor qilish");
-                System.out.println("7. Mening walletim");
-                System.out.println("8. Walletni to'ldirish");
-                System.out.println("9. Wallet tarixi");
-                System.out.println("10. Tizimdan chiqish (logout)");
+                System.out.println("1. Barcha reyslarni ko'rish");
+                System.out.println("2. Bilet band qilish");
+                System.out.println("3. Mening biletlarim");
+                System.out.println("4. Biletni bekor qilish");
+                System.out.println("5. Mening balansim");
+                System.out.println("6. Balansni to'ldirish");
+                System.out.println("7. To'lovlar tarixi");
+                System.out.println("8. Tizimdan chiqish (logout)");
                 System.out.println("0. Dasturdan chiqish");
                 System.out.print("\nTanlov kiriting: ");
                 int choice = readInt();
 
                 switch (choice) {
-                    case 3 -> trainService.printAll();
-                    case 4 -> doBook();
-                    case 5 -> doMyTickets();
-                    case 6 -> doCancel();
-                    case 7 -> walletService.printWallet(authService.getCurrentUser());
-                    case 8 -> doTopUp();
-                    case 9 -> walletService.printHistory(authService.getCurrentUser().getId());
-                    case 10 -> {
+                    case 1 -> trainService.printAll();
+                    case 2 -> doBook();
+                    case 3 -> doMyTickets();
+                    case 4 -> doCancel();
+                    case 5 -> walletService.printWallet(authService.getCurrentUser());
+                    case 6 -> doTopUp();
+                    case 7 -> walletService.printHistory(authService.getCurrentUser().getId());
+                    case 8 -> {
                         authService.logout();
                         System.out.println("✅ Tizimdan chiqildi.");
                     }
@@ -108,38 +119,65 @@ public class Menu {
         System.out.print("Parol: ");
         String pass = in.nextLine();
 
-        if (authService.login(username, pass))
+        if (authService.login(username, pass)) {
             System.out.println("✅ Tizimga kirish muvaffaqiyatli!");
-        else
+            showAfterLogin = true; // login qilganda reyslar chiqsin
+        } else {
             System.out.println("❌ Login yoki parol noto‘g‘ri!");
+        }
     }
 
     private void doBook() {
         User u = authService.getCurrentUser();
-        trainService.printAll();
-        System.out.print("Reys ID (UUID) ni kiriting: ");
-        String id = in.nextLine();
-        trainService.findById(id).ifPresentOrElse(train -> {
-            boolean ok = ticketService.bookTicket(u, train);
-            if (ok) System.out.println("✅ Bilet muvaffaqiyatli band qilindi!");
-            else System.out.println("❌ Balans yetarli emas yoki joylar tugagan.");
-        }, () -> System.out.println("❌ Bunday reys topilmadi."));
+
+        List<Train> allTrains = trainService.printAll();
+
+        if (allTrains.isEmpty()) return;
+
+        System.out.print("Reys raqamini kiriting (0 - ortga): ");
+        int index = Integer.parseInt(in.nextLine());
+
+        if (index == 0) {
+            System.out.println("↩️ Ortga qaytildi.");
+            return; // Menyuya qaytadi
+        }
+
+        if (index < 1 || index > allTrains.size()) {
+            System.out.println("❌ Noto‘g‘ri raqam kiritildi.");
+            return;
+        }
+
+        Train train = allTrains.get(index - 1);
+        boolean ok = ticketService.bookTicket(u, train);
+
+        if (ok)
+            System.out.println("✅ Bilet muvaffaqiyatli band qilindi!");
+        else
+            System.out.println("❌ Balans yetarli emas yoki joylar tugagan.");
     }
 
     private void doMyTickets() {
         User u = authService.getCurrentUser();
         List<Ticket> my = ticketService.getUserActiveTickets(u.getId());
+
         if (my.isEmpty()) {
-            System.out.println("Sizda faol bilet yo‘q.");
+            System.out.println("❌ Sizda faol bilet yo‘q.");
             return;
         }
+
         System.out.println("\n=== MENING BILETLARIM ===");
-        for (Ticket t : my) {
+
+        for (int i = 0; i < my.size(); i++) {
+            Ticket t = my.get(i);
             Train tr = trainService.findById(t.getTrainId()).orElse(null);
             if (tr != null) {
-                System.out.printf("🎟 %s | %s -> %s | %,d so'm | BiletID: %s%n",
-                        tr.getDepartureTime().toString(), tr.getFrom(), tr.getTo(),
-                        Math.round(t.getPrice()), t.getId());
+                System.out.printf("%d. 🎟 %s | %s -> %s | %,d so'm%n",
+                        i + 1,
+                        tr.getDepartureTime().toString(),
+                        tr.getFrom(),
+                        tr.getTo(),
+                        Math.round(t.getPrice())
+                );
             }
         }
     }

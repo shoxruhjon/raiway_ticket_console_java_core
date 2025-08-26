@@ -1,27 +1,23 @@
 package dev.shoxruhjon.models;
 
-import dev.shoxruhjon.utils.IdGenerator;
-
 import java.time.LocalDateTime;
 
-public class WalletTransaction {
-    private final String id;
+public class WalletTransaction extends BaseEntity {
     private final String userId;
     private final double amount;
     private final String type;
     private final LocalDateTime timestamp;
 
     public WalletTransaction(String userId, double amount, String type) {
-        this.id = IdGenerator.generateId();
+        super();
         this.userId = userId;
         this.amount = amount;
         this.type = type;
         this.timestamp = LocalDateTime.now();
     }
 
-    public String getId() { return this.id; }
-    public String getUserId() { return this.userId; }
-    public double getAmount() { return this.amount; }
-    public String getType() { return this.type; }
-    public LocalDateTime getTimestamp() { return this.timestamp; }
+    public String getUserId() { return userId; }
+    public double getAmount() { return amount; }
+    public String getType() { return type; }
+    public LocalDateTime getTimestamp() { return timestamp; }
 }
