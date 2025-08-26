@@ -19,9 +19,9 @@ public class WalletTransaction {
         this.timestamp = LocalDateTime.now();
     }
 
-    public String getId() { return this.id; }
-    public String getUserId() { return this.userId; }
-    public double getAmount() { return this.amount; }
-    public String getType() { return this.type; }
-    public LocalDateTime getTimestamp() { return this.timestamp; }
+    public String getId() { return id; }
+    public String getUserId() { return userId; }
+    public double getAmount() { return amount; }
+    public String getType() { return type; }
+    public LocalDateTime getTimestamp() { return timestamp; }
 }

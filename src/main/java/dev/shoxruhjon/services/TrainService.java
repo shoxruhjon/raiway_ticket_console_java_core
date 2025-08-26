@@ -41,27 +41,73 @@ public class TrainService {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm (dd-MM-yyyy)");
         LocalDate today = LocalDate.now();
 
-        trains.stream()
+        List<Train> upcoming = trains.stream()
                 .filter(t -> t.getDepartureTime().isAfter(LocalDateTime.now()))
                 .sorted(Comparator.comparing(Train::getDepartureTime))
                 .limit(5)
-                .forEach(t -> {
-                    String datePart = t.getDepartureTime().toLocalDate().isEqual(today)
-                            ? t.getDepartureTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " (Bugun)"
-                            : t.getDepartureTime().format(dtf);
-                    System.out.printf("%s. %s -> %s - %s - %,d so'm - %d ta joy%n",
-                            t.getId(), t.getFrom(), t.getTo(), datePart, Math.round(t.getPrice()), t.getAvailableSeats());
-                });
+                .toList();
+
+        if (upcoming.isEmpty()) {
+            System.out.println("❌ Hozircha yaqin reyslar mavjud emas.");
+            return;
+        }
+
+        for (int i = 0; i < upcoming.size(); i++) {
+            Train t = upcoming.get(i);
+            String datePart = t.getDepartureTime().toLocalDate().isEqual(today)
+                    ? t.getDepartureTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " (Bugun)"
+                    : t.getDepartureTime().format(dtf);
+
+            System.out.printf("%d. %s -> %s - %s - %,d so'm - %d ta joy%n",
+                    i + 1, t.getFrom(), t.getTo(), datePart, Math.round(t.getPrice()), t.getAvailableSeats());
+        }
     }
 
-    public void printAll() {
+
+//    public void printAll() {
+//        System.out.println("\n=== BARCHA REYSLAR ===");
+//        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm (dd-MM-yyyy)");
+//
+//        List<Train> sorted = trains.stream()
+//                .sorted(Comparator.comparing(Train::getDepartureTime))
+//                .toList();
+//
+//        if (sorted.isEmpty()) {
+//            System.out.println("❌ Hozircha reyslar mavjud emas.");
+//            return;
+//        }
+//
+//        for (int i = 0; i < sorted.size(); i++) {
+//            Train t = sorted.get(i);
+//            System.out.printf("%d. %s -> %s - %s - %,d so'm - %d ta joy%n",
+//                    i + 1, t.getFrom(), t.getTo(),
+//                    t.getDepartureTime().format(dtf),
+//                    Math.round(t.getPrice()), t.getAvailableSeats());
+//        }
+//    }
+
+    public List<Train> printAll() {
         System.out.println("\n=== BARCHA REYSLAR ===");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm (dd-MM-yyyy)");
-        trains.stream()
+
+        List<Train> sorted = trains.stream()
                 .sorted(Comparator.comparing(Train::getDepartureTime))
-                .forEach(t -> System.out.printf("%s. %s -> %s - %s - %,d so'm - %d ta joy%n",
-                        t.getId(), t.getFrom(), t.getTo(),
-                        t.getDepartureTime().format(dtf),
-                        Math.round(t.getPrice()), t.getAvailableSeats()));
+                .toList();
+
+        if (sorted.isEmpty()) {
+            System.out.println("❌ Hozircha reyslar mavjud emas.");
+            return List.of(); // bo‘sh ro‘yxat qaytaradi
+        }
+
+        for (int i = 0; i < sorted.size(); i++) {
+            Train t = sorted.get(i);
+            System.out.printf("%d. %s -> %s - %s - %,d so'm - %d ta joy%n",
+                    i + 1, t.getFrom(), t.getTo(),
+                    t.getDepartureTime().format(dtf),
+                    Math.round(t.getPrice()), t.getAvailableSeats());
+        }
+        return sorted; // tartiblangan ro‘yxatni qaytaramiz
     }
+
+
 }

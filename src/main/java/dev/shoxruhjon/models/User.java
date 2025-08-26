@@ -9,7 +9,7 @@ public class User {
     private final String fullName;
     private double walletBalance;
 
-    public User(String username, String passwordHash, String fullName) {
+    public User(String fullName, String username, String passwordHash) {
         this.id = IdGenerator.generateId();
         this.username = username;
         this.passwordHash = passwordHash;
@@ -18,30 +18,30 @@ public class User {
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getUsername() {
-        return this.username;
+        return username;
     }
 
     public String getPasswordHash() {
-        return this.passwordHash;
+        return passwordHash;
     }
 
     public String getFullName() {
-        return this.fullName;
+        return fullName;
     }
 
     public double getWalletBalance() {
-        return this.walletBalance;
+        return walletBalance;
     }
 
     public void addToWallet(double amount) {
-        this.walletBalance += amount;
+        walletBalance += amount;
     }
 
     public void deductWalletBalance(double amount) {
-        this.walletBalance -= amount;
+        walletBalance -= amount;
     }
 }

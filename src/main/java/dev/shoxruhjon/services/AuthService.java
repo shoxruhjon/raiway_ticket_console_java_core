@@ -20,6 +20,8 @@ public class AuthService {
 
         String hash = PasswordUtil.hashPassword(password);
         users.add(new User(fullName, username, hash));
+
+        System.out.println("User:  " + users.get(0).getUsername());
         return true;
     }
 
@@ -28,6 +30,7 @@ public class AuthService {
         Optional<User> found = users.stream()
                 .filter(u -> u.getUsername().equals(username) && u.getPasswordHash().equals(hash))
                 .findFirst();
+
         if (found.isPresent()) {
             currentUser = found.get();
             return true;

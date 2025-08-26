@@ -22,30 +22,30 @@ public class Ticket {
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getTrainId() {
-        return this.trainId;
+        return trainId;
     }
 
     public String getUserId() {
-        return this.userId;
+        return userId;
     }
 
     public LocalDateTime getPurchaseTime() {
-        return this.purchaseTime;
+        return purchaseTime;
     }
 
     public double getPrice() {
-        return this.price;
+        return price;
     }
 
     public boolean isCancelled() {
-        return this.cancelled;
+        return cancelled;
     }
 
     public void cancel() {
-        this.cancelled = true;
+        cancelled = true;
     }
 }
