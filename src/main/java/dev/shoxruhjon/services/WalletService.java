@@ -29,7 +29,7 @@ public class WalletService {
     }
 
     public void printHistory(String userId){
-        System.out.println("\n=== WALLET TARIXI ===");
+        System.out.println("\n=== TO'LOVLAR TARIXI ===");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         List<WalletTransaction> my = transactions.stream()
                 .filter(t -> t.getUserId().equals(userId))

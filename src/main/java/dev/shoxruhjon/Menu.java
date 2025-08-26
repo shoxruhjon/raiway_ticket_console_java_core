@@ -66,9 +66,9 @@ public class Menu {
                 System.out.println("2. Bilet band qilish");
                 System.out.println("3. Mening biletlarim");
                 System.out.println("4. Biletni bekor qilish");
-                System.out.println("5. Mening walletim");
-                System.out.println("6. Walletni to'ldirish");
-                System.out.println("7. Wallet tarixi");
+                System.out.println("5. Mening balansim");
+                System.out.println("6. Balansni to'ldirish");
+                System.out.println("7. To'lovlar tarixi");
                 System.out.println("8. Tizimdan chiqish (logout)");
                 System.out.println("0. Dasturdan chiqish");
                 System.out.print("\nTanlov kiriting: ");
@@ -126,12 +126,17 @@ public class Menu {
     private void doBook() {
         User u = authService.getCurrentUser();
 
-        List<Train> allTrains = trainService.printAll(); // endi sorted ro‘yxat qaytadi
+        List<Train> allTrains = trainService.printAll();
 
-        if (allTrains.isEmpty()) return; // agar reys bo‘lmasa, qaytib ketadi
+        if (allTrains.isEmpty()) return;
 
-        System.out.print("Reys raqamini kiriting: ");
+        System.out.print("Reys raqamini kiriting (0 - ortga): ");
         int index = Integer.parseInt(in.nextLine());
+
+        if (index == 0) {
+            System.out.println("↩️ Ortga qaytildi.");
+            return; // Menyuya qaytadi
+        }
 
         if (index < 1 || index > allTrains.size()) {
             System.out.println("❌ Noto‘g‘ri raqam kiritildi.");
