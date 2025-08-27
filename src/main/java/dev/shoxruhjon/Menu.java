@@ -5,13 +5,13 @@ import dev.shoxruhjon.models.Train;
 import dev.shoxruhjon.models.User;
 import dev.shoxruhjon.services.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
     private final Scanner in = new Scanner(System.in);
-
-    private final Database db = new Database();
 
 
     private final IAuthService authService;
@@ -20,6 +20,7 @@ public class Menu {
     private final IWalletService walletService;
 
     public Menu() {
+        Database db = new Database();
         this.authService = new AuthService(db.users);
         this.trainService = new TrainService(db.trains);
         this.ticketService = new TicketService(db.tickets, db.transactions);
@@ -120,7 +121,7 @@ public class Menu {
 
         if (authService.login(username, pass)) {
             System.out.println("✅ Tizimga kirish muvaffaqiyatli!");
-            showAfterLogin = true; // login qilganda reyslar chiqsin
+            showAfterLogin = true;
         } else {
             System.out.println("❌ Login yoki parol noto‘g‘ri!");
         }
@@ -129,7 +130,7 @@ public class Menu {
     private void doBook() {
         User u = authService.getCurrentUser();
 
-        Train train = trainService.selectTrain(); // 🔹 faqat tanlangan reys qaytadi
+        Train train = trainService.selectTrain();
         if (train == null) return;
 
         boolean ok = ticketService.bookTicket(u, train);
@@ -160,10 +161,11 @@ public class Menu {
                         tr.getDepartureTime().toString(),
                         tr.getFrom(),
                         tr.getTo(),
-                        Math.round(t.getPrice())
+                        t.getPrice().setScale(0, RoundingMode.HALF_UP).longValue()
                 );
             }
         }
+
     }
 
     private void doCancel() {
@@ -190,7 +192,7 @@ public class Menu {
     private void doTopUp() {
         User u = authService.getCurrentUser();
         System.out.print("To‘ldirish summasini kiriting: ");
-        double amount = readDouble();
+        BigDecimal amount = new BigDecimal(readDouble());
         walletService.topUp(u, amount);
         walletService.printWallet(u);
     }

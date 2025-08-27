@@ -2,6 +2,7 @@ package dev.shoxruhjon.services;
 
 import dev.shoxruhjon.models.Train;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,25 +16,24 @@ public class TrainService implements ITrainService {
         this.trains = trains;
     }
 
-    @Override
     public void seedTestTrains() {
-        trains.add(new Train("Toshkent", "Samarqand", 100_000, 15, LocalDateTime.now().plusMinutes(30)));
-        trains.add(new Train("Toshkent", "Buxoro", 120_000, 8, LocalDateTime.now().plusHours(2)));
-        trains.add(new Train("Samarqand", "Toshkent", 100_000, 12, LocalDateTime.now().plusHours(4)));
-        trains.add(new Train("Toshkent", "Andijon", 150_000, 5, LocalDateTime.now().plusHours(6)));
-        trains.add(new Train("Buxoro", "Toshkent", 120_000, 10, LocalDateTime.now().plusHours(8)));
+        trains.add(new Train("Toshkent", "Samarqand", BigDecimal.valueOf(100_000), 15, LocalDateTime.now().plusMinutes(30)));
+        trains.add(new Train("Toshkent", "Buxoro", BigDecimal.valueOf(120_000), 8, LocalDateTime.now().plusHours(2)));
+        trains.add(new Train("Samarqand", "Toshkent", BigDecimal.valueOf(100_000), 12, LocalDateTime.now().plusHours(4)));
 
-        trains.add(new Train("Toshkent", "Namangan", 110_000, 20, LocalDateTime.now().plusHours(10)));
-        trains.add(new Train("Namangan", "Toshkent", 110_000, 18, LocalDateTime.now().plusHours(12)));
-        trains.add(new Train("Samarqand", "Buxoro", 95_000, 14, LocalDateTime.now().plusHours(14)));
-        trains.add(new Train("Buxoro", "Samarqand", 95_000, 16, LocalDateTime.now().plusHours(16)));
-        trains.add(new Train("Andijon", "Toshkent", 150_000, 6, LocalDateTime.now().plusHours(18)));
+        trains.add(new Train("Buxoro", "Toshkent", BigDecimal.valueOf(120_000), 10, LocalDateTime.now().plusHours(8)));
 
-        trains.add(new Train("Toshkent", "Xiva", 200_000, 9, LocalDateTime.now().plusHours(20)));
-        trains.add(new Train("Xiva", "Toshkent", 200_000, 11, LocalDateTime.now().plusHours(22)));
-        trains.add(new Train("Samarqand", "Andijon", 130_000, 7, LocalDateTime.now().plusHours(24)));
-        trains.add(new Train("Andijon", "Samarqand", 130_000, 8, LocalDateTime.now().plusHours(26)));
-        trains.add(new Train("Toshkent", "Qo‘qon", 140_000, 13, LocalDateTime.now().plusHours(28)));
+        trains.add(new Train("Toshkent", "Namangan", BigDecimal.valueOf(110_000), 20, LocalDateTime.now().plusHours(10)));
+        trains.add(new Train("Namangan", "Toshkent", BigDecimal.valueOf(110_000), 18, LocalDateTime.now().plusHours(12)));
+        trains.add(new Train("Samarqand", "Buxoro", BigDecimal.valueOf(95_000), 14, LocalDateTime.now().plusHours(14)));
+        trains.add(new Train("Buxoro", "Samarqand", BigDecimal.valueOf(95_000), 16, LocalDateTime.now().plusHours(16)));
+        trains.add(new Train("Andijon", "Toshkent", BigDecimal.valueOf(150_000), 6, LocalDateTime.now().plusHours(18)));
+
+        trains.add(new Train("Toshkent", "Xiva", BigDecimal.valueOf(200_000), 9, LocalDateTime.now().plusHours(20)));
+        trains.add(new Train("Xiva", "Toshkent", BigDecimal.valueOf(200_000), 11, LocalDateTime.now().plusHours(22)));
+        trains.add(new Train("Samarqand", "Andijon", BigDecimal.valueOf(130_000), 7, LocalDateTime.now().plusHours(24)));
+        trains.add(new Train("Andijon", "Samarqand", BigDecimal.valueOf(130_000), 8, LocalDateTime.now().plusHours(26)));
+        trains.add(new Train("Toshkent", "Qo‘qon", BigDecimal.valueOf(140_000), 13, LocalDateTime.now().plusHours(28)));
     }
 
 
@@ -73,9 +73,13 @@ public class TrainService implements ITrainService {
                     ? t.getDepartureTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " (Bugun)"
                     : t.getDepartureTime().format(dtf);
 
-            System.out.printf("%d. %s -> %s - %s - %,d so'm - %d ta joy%n",
-                    i + 1, t.getFrom(), t.getTo(), datePart,
-                    Math.round(t.getPrice()), t.getAvailableSeats());
+            System.out.printf("%d. %s -> %s - %s - %,.2f so'm - %d ta joy%n",
+                    i + 1,
+                    t.getFrom(),
+                    t.getTo(),
+                    datePart,
+                    t.getPrice().doubleValue(),
+                    t.getAvailableSeats());
         }
     }
 
