@@ -7,6 +7,7 @@ import dev.shoxruhjon.services.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -152,13 +153,15 @@ public class Menu {
 
         System.out.println("\n=== MENING BILETLARIM ===");
 
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
         for (int i = 0; i < my.size(); i++) {
             Ticket t = my.get(i);
             Train tr = trainService.findById(t.getTrainId()).orElse(null);
             if (tr != null) {
                 System.out.printf("%d. 🎟 %s | %s -> %s | %,d so'm%n",
                         i + 1,
-                        tr.getDepartureTime().toString(),
+                        tr.getDepartureTime().format(fmt),
                         tr.getFrom(),
                         tr.getTo(),
                         t.getPrice().setScale(0, RoundingMode.HALF_UP).longValue()
