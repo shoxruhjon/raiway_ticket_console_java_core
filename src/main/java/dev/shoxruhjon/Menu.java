@@ -56,7 +56,7 @@ public class Menu {
                 switch (choice) {
                     case 1 -> doRegister();
                     case 2 -> doLogin();
-                    case 3 -> trainService.printAll(false);
+                    case 3 -> trainService.printAll();
                     case 0 -> {
                         System.out.println("Dasturdan chiqildi.");
                         return;
@@ -79,7 +79,7 @@ public class Menu {
                 int choice = readInt();
 
                 switch (choice) {
-                    case 1 -> trainService.printAll(false);
+                    case 1 -> trainService.printAll();
                     case 2 -> doBook();
                     case 3 -> doMyTickets();
                     case 4 -> doCancel();
@@ -130,24 +130,9 @@ public class Menu {
     private void doBook() {
         User u = authService.getCurrentUser();
 
-        List<Train> allTrains = trainService.printAll(true);
+        Train train = trainService.selectTrain(); // 🔹 faqat tanlangan reys qaytadi
+        if (train == null) return;
 
-        if (allTrains.isEmpty()) return;
-
-        System.out.print("Reys raqamini kiriting (0 - ortga): ");
-        int index = Integer.parseInt(in.nextLine());
-
-        if (index == 0) {
-            System.out.println("↩️ Ortga qaytildi.");
-            return; // Menyuya qaytadi
-        }
-
-        if (index < 1 || index > allTrains.size()) {
-            System.out.println("❌ Noto‘g‘ri raqam kiritildi.");
-            return;
-        }
-
-        Train train = allTrains.get(index - 1);
         boolean ok = ticketService.bookTicket(u, train);
 
         if (ok)

@@ -80,10 +80,10 @@ public class TrainService implements ITrainService {
     }
 
     @Override
-    public List<Train> printAll(boolean selectMode) {
+    public void printAll() {
         if (trains.isEmpty()) {
             System.out.println("🚂 Hozircha reyslar mavjud emas.");
-            return Collections.emptyList();
+            return;
         }
 
         List<Train> sorted = trains.stream()
@@ -104,36 +104,83 @@ public class TrainService implements ITrainService {
                 System.out.println((i + 1) + ". " + sorted.get(i));
             }
 
-            if (!selectMode) {
-                // 🔹 Dinamik tugmalar chiqarish
-                StringBuilder menu = new StringBuilder("\n");
-                if (currentPage > 0) {
-                    menu.append("[p] Oldingi sahifa  ");
-                }
-                if (currentPage < totalPages - 1) {
-                    menu.append("[n] Keyingi sahifa  ");
-                }
-                menu.append("[0] Chiqish");
+            // 🔹 Dinamik tugmalar
+            StringBuilder menu = new StringBuilder("\n");
+            if (currentPage > 0) menu.append("[p] Oldingi sahifa  ");
+            if (currentPage < totalPages - 1) menu.append("[n] Keyingi sahifa  ");
+            menu.append("[0] Chiqish");
 
-                System.out.println(menu);
-                System.out.print("Tanlov: ");
-                String choice = sc.nextLine();
+            System.out.println(menu);
+            System.out.print("Tanlov: ");
+            String choice = sc.nextLine();
 
-                if (choice.equals("n") && currentPage < totalPages - 1) {
-                    currentPage++;
-                } else if (choice.equals("p") && currentPage > 0) {
-                    currentPage--;
-                } else if (choice.equals("0")) {
-                    break;
-                } else {
-                    System.out.println("❌ Noto‘g‘ri tanlov!");
-                }
+            if (choice.equals("n") && currentPage < totalPages - 1) {
+                currentPage++;
+            } else if (choice.equals("p") && currentPage > 0) {
+                currentPage--;
+            } else if (choice.equals("0")) {
+                break;
             } else {
-                System.out.print("\nReys raqamini kiriting (0 - ortga): ");
-                return sorted;
+                System.out.println("❌ Noto‘g‘ri tanlov!");
             }
         }
-
-        return sorted;
     }
+
+    @Override
+    public Train selectTrain() {
+        if (trains.isEmpty()) {
+            System.out.println("🚂 Hozircha reyslar mavjud emas.");
+            return null;
+        }
+
+        List<Train> sorted = trains.stream()
+                .sorted(Comparator.comparing(Train::getDepartureTime))
+                .toList();
+
+        int pageSize = 10;
+        int totalPages = (int) Math.ceil((double) sorted.size() / pageSize);
+        int currentPage = 0;
+        Scanner sc = new Scanner(System.in);
+
+        while (true) {
+            int start = currentPage * pageSize;
+            int end = Math.min(start + pageSize, sorted.size());
+
+            System.out.println("\n--- Reyslar ro‘yxati (sahifa " + (currentPage + 1) + "/" + totalPages + ") ---");
+            for (int i = start; i < end; i++) {
+                System.out.println((i + 1) + ". " + sorted.get(i));
+            }
+
+            // 🔹 Faqat kerakli tugmalar chiqadi
+            StringBuilder menu = new StringBuilder("\n");
+            if (currentPage > 0) menu.append("[p] Oldingi sahifa  ");
+            if (currentPage < totalPages - 1) menu.append("[n] Keyingi sahifa  ");
+            menu.append("[0] Ortga  |  [raqam] Reys tanlash");
+
+            System.out.println(menu);
+            System.out.print("Tanlov: ");
+            String input = sc.nextLine();
+
+            if (input.equals("n") && currentPage < totalPages - 1) {
+                currentPage++;
+            } else if (input.equals("p") && currentPage > 0) {
+                currentPage--;
+            } else if (input.equals("0")) {
+                System.out.println("↩️ Ortga qaytildi.");
+                return null;
+            } else {
+                try {
+                    int choice = Integer.parseInt(input);
+                    if (choice < 1 || choice > sorted.size()) {
+                        System.out.println("❌ Noto‘g‘ri raqam!");
+                    } else {
+                        return sorted.get(choice - 1);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("❌ Noto‘g‘ri qiymat!");
+                }
+            }
+        }
+    }
+
 }
