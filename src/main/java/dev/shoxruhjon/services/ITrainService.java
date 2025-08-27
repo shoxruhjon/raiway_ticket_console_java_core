@@ -15,5 +15,5 @@ public interface ITrainService {
 
     void printUpcomingTop5();
 
-    List<Train> printAll();
+    List<Train> printAll(boolean selectMode);
 }

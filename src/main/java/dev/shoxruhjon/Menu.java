@@ -56,7 +56,7 @@ public class Menu {
                 switch (choice) {
                     case 1 -> doRegister();
                     case 2 -> doLogin();
-                    case 3 -> trainService.printAll();
+                    case 3 -> trainService.printAll(false);
                     case 0 -> {
                         System.out.println("Dasturdan chiqildi.");
                         return;
@@ -79,7 +79,7 @@ public class Menu {
                 int choice = readInt();
 
                 switch (choice) {
-                    case 1 -> trainService.printAll();
+                    case 1 -> trainService.printAll(false);
                     case 2 -> doBook();
                     case 3 -> doMyTickets();
                     case 4 -> doCancel();
@@ -130,7 +130,7 @@ public class Menu {
     private void doBook() {
         User u = authService.getCurrentUser();
 
-        List<Train> allTrains = trainService.printAll();
+        List<Train> allTrains = trainService.printAll(true);
 
         if (allTrains.isEmpty()) return;
 

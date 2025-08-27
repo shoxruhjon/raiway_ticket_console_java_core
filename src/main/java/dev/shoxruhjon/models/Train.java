@@ -1,6 +1,7 @@
 package dev.shoxruhjon.models;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Train extends BaseEntity {
     private final String from;
@@ -49,4 +50,15 @@ public class Train extends BaseEntity {
         availableSeats++;
         touch();
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s -> %s - %s - %,.0f so'm - %d ta joy",
+                from,
+                to,
+                departureTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")),
+                price,
+                availableSeats);
+    }
+
 }
