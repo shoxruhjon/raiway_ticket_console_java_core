@@ -11,10 +11,9 @@ import java.util.Scanner;
 public class Menu {
     private final Scanner in = new Scanner(System.in);
 
-    // "Bazadagi" listlar:
     private final Database db = new Database();
 
-    // Xizmatlar:
+
     private final IAuthService authService;
     private final ITrainService trainService;
     private final ITicketService ticketService;
@@ -36,15 +35,15 @@ public class Menu {
 
     public void start() {
         while (true) {
-            // Har ekranda — yaqin 5 ta reys
+
             if (firstLaunch || showAfterLogin) {
                 trainService.printUpcomingTop5();
-                firstLaunch = false;       // faqat 1-marta ishlaydi
-                showAfterLogin = false;    // login bo‘lganda 1 marta ishlaydi
+                firstLaunch = false;
+                showAfterLogin = false;
             }
 
             if (authService.getCurrentUser() == null) {
-                // Login qilmagan foydalanuvchi menyusi
+
                 System.out.println("\n=== MENYU ===");
                 System.out.println("1. Ro'yxatdan o'tish");
                 System.out.println("2. Tizimga kirish");
@@ -64,7 +63,7 @@ public class Menu {
                     default -> System.out.println("❌ Noto‘g‘ri tanlov!");
                 }
             } else {
-                // Login qilingan foydalanuvchi menyusi
+
                 System.out.println("\n=== MENYU ===");
                 System.out.println("1. Barcha reyslarni ko'rish");
                 System.out.println("2. Bilet band qilish");

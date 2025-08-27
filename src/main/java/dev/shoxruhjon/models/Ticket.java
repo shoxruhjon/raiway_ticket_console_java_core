@@ -10,7 +10,7 @@ public class Ticket extends BaseEntity {
     private boolean cancelled;
 
     public Ticket(String trainId, String userId, double price) {
-        super(); // BaseEntity constructor
+        super();
         this.trainId = trainId;
         this.userId = userId;
         this.price = price;
@@ -40,6 +40,6 @@ public class Ticket extends BaseEntity {
 
     public void cancel() {
         this.cancelled = true;
-        touch(); // updatedAt ni yangilash
+        touch();
     }
 }

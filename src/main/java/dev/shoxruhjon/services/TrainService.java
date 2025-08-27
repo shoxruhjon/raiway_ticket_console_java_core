@@ -104,7 +104,6 @@ public class TrainService implements ITrainService {
                 System.out.println((i + 1) + ". " + sorted.get(i));
             }
 
-            // 🔹 Dinamik tugmalar
             StringBuilder menu = new StringBuilder("\n");
             if (currentPage > 0) menu.append("[p] Oldingi sahifa  ");
             if (currentPage < totalPages - 1) menu.append("[n] Keyingi sahifa  ");
@@ -151,7 +150,6 @@ public class TrainService implements ITrainService {
                 System.out.println((i + 1) + ". " + sorted.get(i));
             }
 
-            // 🔹 Faqat kerakli tugmalar chiqadi
             StringBuilder menu = new StringBuilder("\n");
             if (currentPage > 0) menu.append("[p] Oldingi sahifa  ");
             if (currentPage < totalPages - 1) menu.append("[n] Keyingi sahifa  ");
