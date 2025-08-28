@@ -10,14 +10,17 @@ public class Train extends BaseEntity {
     private final BigDecimal price;
     private int availableSeats;
     private final LocalDateTime departureTime;
+    private final LocalDateTime arrivalTime;
 
-    public Train(String from, String to, BigDecimal price, int availableSeats, LocalDateTime departureTime) {
+    public Train(String from, String to, BigDecimal price, int availableSeats,
+                 LocalDateTime departureTime, LocalDateTime arrivalTime) {
         super();
         this.from = from;
         this.to = to;
         this.price = price;
         this.availableSeats = availableSeats;
         this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
     }
 
     public String getFrom() {
@@ -40,6 +43,10 @@ public class Train extends BaseEntity {
         return departureTime;
     }
 
+    public LocalDateTime getArrivalTime() {
+        return arrivalTime;
+    }
+
     public void decreaseSeat() {
         if (availableSeats > 0) {
             availableSeats--;
@@ -54,10 +61,12 @@ public class Train extends BaseEntity {
 
     @Override
     public String toString() {
-        return String.format("%s -> %s - %s - %s so'm - %d ta joy",
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        return String.format("%s -> %s | %s - %s | %s so'm | %d ta joy",
                 from,
                 to,
-                departureTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")),
+                departureTime.format(dtf),
+                arrivalTime.format(dtf),
                 price.toPlainString(),
                 availableSeats);
     }
