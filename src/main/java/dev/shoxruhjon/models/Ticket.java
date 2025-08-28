@@ -1,16 +1,17 @@
 package dev.shoxruhjon.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Ticket extends BaseEntity {
     private final String trainId;
     private final String userId;
     private final LocalDateTime purchaseTime;
-    private final double price;
+    private final BigDecimal price;
     private boolean cancelled;
 
-    public Ticket(String trainId, String userId, double price) {
-        super(); // BaseEntity constructor
+    public Ticket(String trainId, String userId, BigDecimal price) {
+        super();
         this.trainId = trainId;
         this.userId = userId;
         this.price = price;
@@ -30,7 +31,7 @@ public class Ticket extends BaseEntity {
         return purchaseTime;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
@@ -40,6 +41,6 @@ public class Ticket extends BaseEntity {
 
     public void cancel() {
         this.cancelled = true;
-        touch(); // updatedAt ni yangilash
+        touch();
     }
 }

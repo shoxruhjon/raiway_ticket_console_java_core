@@ -1,17 +1,19 @@
 package dev.shoxruhjon.models;
 
+import java.math.BigDecimal;
+
 public class User extends BaseEntity {
     private final String username;
     private final String passwordHash;
     private final String fullName;
-    private double walletBalance;
+    private BigDecimal walletBalance;
 
     public User(String fullName, String username, String passwordHash) {
         super();
         this.username = username;
         this.passwordHash = passwordHash;
         this.fullName = fullName;
-        this.walletBalance = 0.0;
+        this.walletBalance = BigDecimal.ZERO;
     }
 
     public String getUsername() {
@@ -26,17 +28,17 @@ public class User extends BaseEntity {
         return fullName;
     }
 
-    public double getWalletBalance() {
+    public BigDecimal getWalletBalance() {
         return walletBalance;
     }
 
-    public void addToWallet(double amount) {
-        walletBalance += amount;
+    public void addToWallet(BigDecimal amount) {
+        walletBalance = walletBalance.add(amount);
         touch();
     }
 
-    public void deductWalletBalance(double amount) {
-        walletBalance -= amount;
+    public void deductWalletBalance(BigDecimal amount) {
+        walletBalance = walletBalance.subtract(amount);
         touch();
     }
 }

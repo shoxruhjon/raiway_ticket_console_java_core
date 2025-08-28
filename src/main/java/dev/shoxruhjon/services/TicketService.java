@@ -5,6 +5,7 @@ import dev.shoxruhjon.models.Train;
 import dev.shoxruhjon.models.User;
 import dev.shoxruhjon.models.WalletTransaction;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,16 +23,28 @@ public class TicketService implements ITicketService {
 
     @Override
     public boolean bookTicket(User user, Train train) {
-        if(train.getAvailableSeats() <= 0) return false;
-        if(user.getWalletBalance() < train.getPrice()) return false;
+        if (train.getAvailableSeats() <= 0) return false;
 
-        user.deductWalletBalance(train.getPrice());
-        transactions.add(new WalletTransaction(user.getId(), -train.getPrice(), "TICKET_PURCHASE"));
+        BigDecimal price = train.getPrice(); // Train da BigDecimal
+        if (user.getWalletBalance().compareTo(price) < 0) {
+            return false; // balans yetarli emas
+        }
 
-        tickets.add(new Ticket(train.getId(), user.getId(), train.getPrice()));
+        // Pul yechib tashlanadi
+        user.deductWalletBalance(price);
+
+        // Transaction yoziladi (price.negate() - xarajatni ko‘rsatadi)
+        transactions.add(new WalletTransaction(user.getId(), price.negate(), "TICKET_PURCHASE"));
+
+        // Ticket yaratib qo‘shamiz
+        tickets.add(new Ticket(train.getId(), user.getId(), price));
+
+        // Joy sonini kamaytiramiz
         train.decreaseSeat();
+
         return true;
     }
+
 
     @Override
     public List<Ticket> getUserActiveTickets(String userId) {
@@ -47,7 +60,6 @@ public class TicketService implements ITicketService {
                 .findFirst();
     }
 
-    /** Bekor qilish: jo'nashga 1 soatdan ko‘p vaqt qolganda ruxsat beriladi */
     @Override
     public CancelResult cancelTicket(User user, Train train, Ticket ticket) {
         if (ticket.isCancelled()) {
@@ -57,6 +69,7 @@ public class TicketService implements ITicketService {
         if (limit.isBefore(LocalDateTime.now())) {
             return new CancelResult(false, "Bekor qilib bo'lmaydi: jo'nashga 1 soatdan kam vaqt qoldi.");
         }
+
         ticket.cancel();
         user.addToWallet(ticket.getPrice());
         transactions.add(new WalletTransaction(user.getId(), ticket.getPrice(), "TICKET_REFUND"));

@@ -5,22 +5,23 @@ import dev.shoxruhjon.models.Train;
 import dev.shoxruhjon.models.User;
 import dev.shoxruhjon.services.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
     private final Scanner in = new Scanner(System.in);
 
-    // "Bazadagi" listlar:
-    private final Database db = new Database();
 
-    // Xizmatlar:
     private final IAuthService authService;
     private final ITrainService trainService;
     private final ITicketService ticketService;
     private final IWalletService walletService;
 
     public Menu() {
+        Database db = new Database();
         this.authService = new AuthService(db.users);
         this.trainService = new TrainService(db.trains);
         this.ticketService = new TicketService(db.tickets, db.transactions);
@@ -36,15 +37,15 @@ public class Menu {
 
     public void start() {
         while (true) {
-            // Har ekranda — yaqin 5 ta reys
+
             if (firstLaunch || showAfterLogin) {
                 trainService.printUpcomingTop5();
-                firstLaunch = false;       // faqat 1-marta ishlaydi
-                showAfterLogin = false;    // login bo‘lganda 1 marta ishlaydi
+                firstLaunch = false;
+                showAfterLogin = false;
             }
 
             if (authService.getCurrentUser() == null) {
-                // Login qilmagan foydalanuvchi menyusi
+
                 System.out.println("\n=== MENYU ===");
                 System.out.println("1. Ro'yxatdan o'tish");
                 System.out.println("2. Tizimga kirish");
@@ -64,7 +65,7 @@ public class Menu {
                     default -> System.out.println("❌ Noto‘g‘ri tanlov!");
                 }
             } else {
-                // Login qilingan foydalanuvchi menyusi
+
                 System.out.println("\n=== MENYU ===");
                 System.out.println("1. Barcha reyslarni ko'rish");
                 System.out.println("2. Bilet band qilish");
@@ -121,7 +122,7 @@ public class Menu {
 
         if (authService.login(username, pass)) {
             System.out.println("✅ Tizimga kirish muvaffaqiyatli!");
-            showAfterLogin = true; // login qilganda reyslar chiqsin
+            showAfterLogin = true;
         } else {
             System.out.println("❌ Login yoki parol noto‘g‘ri!");
         }
@@ -130,24 +131,9 @@ public class Menu {
     private void doBook() {
         User u = authService.getCurrentUser();
 
-        List<Train> allTrains = trainService.printAll();
+        Train train = trainService.selectTrain();
+        if (train == null) return;
 
-        if (allTrains.isEmpty()) return;
-
-        System.out.print("Reys raqamini kiriting (0 - ortga): ");
-        int index = Integer.parseInt(in.nextLine());
-
-        if (index == 0) {
-            System.out.println("↩️ Ortga qaytildi.");
-            return; // Menyuya qaytadi
-        }
-
-        if (index < 1 || index > allTrains.size()) {
-            System.out.println("❌ Noto‘g‘ri raqam kiritildi.");
-            return;
-        }
-
-        Train train = allTrains.get(index - 1);
         boolean ok = ticketService.bookTicket(u, train);
 
         if (ok)
@@ -167,19 +153,22 @@ public class Menu {
 
         System.out.println("\n=== MENING BILETLARIM ===");
 
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
         for (int i = 0; i < my.size(); i++) {
             Ticket t = my.get(i);
             Train tr = trainService.findById(t.getTrainId()).orElse(null);
             if (tr != null) {
                 System.out.printf("%d. 🎟 %s | %s -> %s | %,d so'm%n",
                         i + 1,
-                        tr.getDepartureTime().toString(),
+                        tr.getDepartureTime().format(fmt),
                         tr.getFrom(),
                         tr.getTo(),
-                        Math.round(t.getPrice())
+                        t.getPrice().setScale(0, RoundingMode.HALF_UP).longValue()
                 );
             }
         }
+
     }
 
     private void doCancel() {
@@ -206,7 +195,7 @@ public class Menu {
     private void doTopUp() {
         User u = authService.getCurrentUser();
         System.out.print("To‘ldirish summasini kiriting: ");
-        double amount = readDouble();
+        BigDecimal amount = new BigDecimal(readDouble());
         walletService.topUp(u, amount);
         walletService.printWallet(u);
     }
